@@ -1,22 +1,21 @@
 import { useEffect } from "react";
 import { useMoralis } from "react-moralis";
-import { BrowserRouter as Router, Switch, Route, Redirect, Link } from "react-router-dom";
+import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
 import Account from "components/Account/Account";
 import Chains from "components/Chains";
 import Profile from "components/Profile";
 import Landing from "components/Landing";
 import NFTBalance from "components/NFTBalance";
-import { Layout, Tabs } from "antd";
+import { Layout } from "antd";
 import "antd/dist/antd.css";
 import NativeBalance from "components/NativeBalance";
 import "./style.css";
-import QuickStart from "components/QuickStart";
 import Contract from "components/Contract/Contract";
 import Text from "antd/lib/typography/Text";
-import Ramper from "components/Ramper";
 import MenuItems from "./components/MenuItems";
 import TCTlogo from "./logo.png";
 const { Header, Footer } = Layout;
+// import { ImgPinky } from "assets";
 
 const styles = {
   content: {
@@ -26,7 +25,7 @@ const styles = {
     color: "#041836",
     marginTop: "130px",
     padding: "10px",
-    width: "100%"
+    width: "100%",
   },
   header: {
     position: "fixed",
@@ -50,18 +49,20 @@ const styles = {
   },
 };
 const App = ({ isServerInfo }) => {
-  const { isWeb3Enabled, enableWeb3, isAuthenticated, isWeb3EnableLoading } = useMoralis();
+  const { isWeb3Enabled, enableWeb3, isAuthenticated, isWeb3EnableLoading } =
+    useMoralis();
 
   useEffect(() => {
     const connectorId = window.localStorage.getItem("connectorId");
-    if (isAuthenticated && !isWeb3Enabled && !isWeb3EnableLoading) enableWeb3({ provider: connectorId });
+    if (isAuthenticated && !isWeb3Enabled && !isWeb3EnableLoading)
+      enableWeb3({ provider: connectorId });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isAuthenticated, isWeb3Enabled]);
 
   return (
     <Layout style={{ height: "100vh", overflow: "auto" }}>
       <Router>
-        <Header style={styles.header}>          
+        <Header style={styles.header}>
           <Logo />
           <MenuItems />
           <div style={styles.headerRight}>
@@ -69,7 +70,7 @@ const App = ({ isServerInfo }) => {
             {/* <TokenPrice
               address="0x1f9840a85d5af5bf1d1762f925bdaddc4201f984"
               chain="eth"
-              image="https://cloudflare-ipfs.com/ipfs/QmXttGpZrECX5qCyXbBQiqgQNytVGeZW5Anewvh2jc4psg/"
+              image={ImgPinky}
               size="40px"
             /> */}
             <NativeBalance />
@@ -87,10 +88,10 @@ const App = ({ isServerInfo }) => {
             </Route>
             <Route path="/contract">
               <Contract />
-            </Route> 
+            </Route>
             <Route path="/profile">
               <Profile />
-            </Route>           
+            </Route>
             {/* <Route path="/wallet">
               <Wallet />
             </Route>
@@ -121,7 +122,7 @@ const App = ({ isServerInfo }) => {
             </Route> 
             <Route path="/ethereum-boilerplate">
               <Redirect to="/quickstart" />
-            </Route> */}            
+            </Route> */}
             <Route path="/nonauthenticated">
               <>Please login using the "Authenticate" button</>
             </Route>
@@ -130,8 +131,12 @@ const App = ({ isServerInfo }) => {
       </Router>
       <Footer style={{ textAlign: "center" }}>
         <Text style={{ display: "block" }}>
-          Thanks to Moralis for this awesome {' '}
-          <a href="https://github.com/ethereum-boilerplate/ethereum-boilerplate/" target="_blank" rel="noopener noreferrer">
+          Thanks to Moralis for this awesome{" "}
+          <a
+            href="https://github.com/ethereum-boilerplate/ethereum-boilerplate/"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
             boilerplate ⭐️
           </a>
         </Text>
@@ -143,7 +148,7 @@ const App = ({ isServerInfo }) => {
 export const Logo = () => (
   <div style={{ display: "flex" }}>
     <Link to="/">
-      <img src={TCTlogo} />
+      <img src={TCTlogo} alt="TCT Logo" />
     </Link>
   </div>
 );

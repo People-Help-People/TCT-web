@@ -1,4 +1,4 @@
-import { Card, Timeline, Typography } from "antd";
+import { Typography } from "antd";
 import React, { useMemo } from "react";
 import { useMoralis } from "react-moralis";
 
@@ -25,11 +25,19 @@ const styles = {
 export default function Landing({ isServerInfo }) {
   const { Moralis } = useMoralis();
 
-  const isInchDex = useMemo(() => (Moralis.Plugins?.oneInch ? true : false), [Moralis.Plugins?.oneInch]);
+  const isInchDex = useMemo(
+    () => (Moralis.Plugins?.oneInch ? true : false),
+    [Moralis.Plugins?.oneInch]
+  );
 
   return (
     <div style={{ display: "flex", gap: "10px" }}>
-      <iframe src="https://the-collective-truth.web.app/" height="600" width="1000"/>
+      <iframe
+        src="https://the-collective-truth.web.app/"
+        height="600"
+        width="1000"
+        title="The Collective Truth"
+      />
     </div>
   );
 }
