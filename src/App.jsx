@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { useMoralis } from "react-moralis";
-import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
+import { BrowserRouter as Router, Switch, Route,  Link } from "react-router-dom";
 import Account from "components/Account/Account";
 import Chains from "components/Chains";
 import Profile from "components/Profile";
@@ -8,14 +8,12 @@ import Landing from "components/Landing";
 import NFTBalance from "components/NFTBalance";
 import { Layout } from "antd";
 import "antd/dist/antd.css";
-import NativeBalance from "components/NativeBalance";
 import "./style.css";
 import Contract from "components/Contract/Contract";
 import Text from "antd/lib/typography/Text";
 import MenuItems from "./components/MenuItems";
 import TCTlogo from "./logo.png";
 const { Header, Footer } = Layout;
-// import { ImgPinky } from "assets";
 
 const styles = {
   content: {
@@ -67,13 +65,6 @@ const App = ({ isServerInfo }) => {
           <MenuItems />
           <div style={styles.headerRight}>
             <Chains />
-            {/* <TokenPrice
-              address="0x1f9840a85d5af5bf1d1762f925bdaddc4201f984"
-              chain="eth"
-              image={ImgPinky}
-              size="40px"
-            /> */}
-            <NativeBalance />
             <Account />
           </div>
         </Header>
@@ -148,7 +139,7 @@ const App = ({ isServerInfo }) => {
 export const Logo = () => (
   <div style={{ display: "flex" }}>
     <Link to="/">
-      <img src={TCTlogo} alt="TCT Logo" />
+      <img src={TCTlogo} alt="TCT Logo " />
     </Link>
   </div>
 );
