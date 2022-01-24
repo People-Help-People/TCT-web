@@ -116,36 +116,29 @@ export default function Profile(props) {
     user.set("username", username);
     user.save().then(() => {
       message.success("Username updated successfully");
-      setUpdateToggle(false);
+      setUpdateToggle(false);  
     });
   };
 
   const fetchUsername = async () => {
-    // const currentUser = Moralis.Object.extend("User");
-    // const query = new Moralis.Query(currentUser);    
-    // console.log(address, account);
-    // query.equalTo("ethAddress", address);
-    // const results = await query.find();
-    // console.log(results);
-    // console.log("results", results[0].get("username"));
-    // if (results.length > 0) {
-    //   setUsername(results[0].get("username"));
-    // } else {
-    //   message.error("Invalid user address");
-    // }
-    if (visitor) {
-      setUsername(user.get("username"));
+    
+    const results = await Moralis.Cloud.run("getUsername");
+    const currentUser = results.find((user) => user.get("ethAddress") === address);
+    console.log("results", results, address);
+    if (currentUser) {
+      setUsername(currentUser.get("username") || "");
     } else {
-      setUsername("");
+      message.error("Invalid user address");
     }
+    
   };
 
 
   useEffect(() => {
     const checkExistingAccounts = async () => {
       await fetchTwitterAccount();    
-      await fetchUsername();
       setVisitor(account !== address);
+      await fetchUsername();
     };
     if (account && isWeb3Enabled) {
       console.log(isWeb3Enabled, isAuthenticated, isWeb3EnableLoading);
