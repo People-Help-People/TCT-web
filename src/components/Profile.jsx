@@ -1,12 +1,15 @@
 import { message, Table, Image, Modal, Button } from "antd";
 import { useEffect, useState } from "react";
 import { useMoralis, useWeb3ExecuteFunction } from "react-moralis";
+import Moralis from "moralis";
 import { uid } from "uid";
 import { CheckCircleTwoTone } from "@ant-design/icons";
 import { ImgTwitter } from "assets";
+import { useParams } from "react-router";
 
 export default function Profile(props) {
-  const { user, account } = useMoralis();
+  let { address } = useParams();
+  const { user, account, isWeb3Enabled, enableWeb3, isAuthenticated, isWeb3EnableLoading } = useMoralis();
   const [username, setUsername] = useState("");
   const [updateToggle, setUpdateToggle] = useState(false);
   const [isModalVisible, setIsModalVisible] = useState(false);
@@ -14,6 +17,7 @@ export default function Profile(props) {
   const [tweetUID, setTweetUID] = useState("");
   const [tweetURL, setTweetURL] = useState("");
   const [twitterProfile, setTwitterProfile] = useState("");
+  const [visitor, setVisitor] = useState(true); // to identify if the user is visiting his own profile or not
 
   const contractProcessor = useWeb3ExecuteFunction();
 
@@ -29,12 +33,6 @@ export default function Profile(props) {
   const handleCancel = () => {
     setIsModalVisible(false);
   };
-
-  useEffect(() => {
-    if (user?.get("username")) {
-      setUsername(user.get("username"));
-    }
-  }, [user]);
 
   const fetchTwitterAccount = async () => {
     const options = {
@@ -52,7 +50,7 @@ export default function Profile(props) {
         },
       ],
       params: {
-        _account: account,
+        _account: address,
       },
       msgValue: 0,
     };
@@ -113,16 +111,41 @@ export default function Profile(props) {
       },
     });
   };
+  
+  const updateUsername = async (username) => {
+    user.set("username", username);
+    user.save().then(() => {
+      message.success("Username updated successfully");
+      setUpdateToggle(false);
+    });
+  };
+
+  const fetchUsername = async () => {
+    const currentUser = Moralis.Object.extend("User");
+    const query = new Moralis.Query(currentUser);    
+    console.log(address);
+    query.equalTo("ethAddress", address);
+    const results = await query.find();
+    console.log("results", results[0].get("username"));
+    if (results.length > 0) {
+      setUsername(results[0].get("username"));
+    } else {
+      message.error("Invalid user address");
+    }
+  };
+
 
   useEffect(() => {
     const checkExistingAccounts = async () => {
-      console.log(account);
-      await fetchTwitterAccount();
+      await fetchTwitterAccount();    
+      await fetchUsername();
+      setVisitor(account !== address);
     };
-    // if(!account)
-    //     checkExistingAccounts();
-    if (account) checkExistingAccounts();
-  }, [account]);
+    if (account && isWeb3Enabled) {
+      console.log(isWeb3Enabled, isAuthenticated, isWeb3EnableLoading);
+      checkExistingAccounts();
+    }
+  }, [account,isWeb3Enabled,address]);
 
   useEffect(() => {
     // generate uid if not present in localstorage
@@ -132,23 +155,20 @@ export default function Profile(props) {
       localStorage.setItem("uid", uidd);
     } else {
       setTweetUID(localStorage.getItem("uid"));
-    }
+    }    
   }, []);
 
-  const updateUsername = async (username) => {
-    user.set("username", username);
-    user.save().then(() => {
-      message.success("Username updated successfully");
-      setUpdateToggle(false);
-    });
-  };
   return (
     <div style={{ width: "70%" }}>
       <div
         className="header"
         style={{ fontSize: "20px", marginBottom: "40px", textAlign: "center" }}
       >
-        {updateToggle ? (
+        {visitor ? (
+          <h1 style={{ display: "inline", marginRight: "10px" }}>
+          {username}
+        </h1>
+        ) : updateToggle ? (
           <>
             <h1 style={{ display: "inline", marginRight: "10px" }}>
               <input

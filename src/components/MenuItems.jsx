@@ -1,9 +1,11 @@
 import { useLocation } from "react-router";
 import { Menu } from "antd";
 import { NavLink } from "react-router-dom";
+import {useMoralis} from "react-moralis";
 
 function MenuItems() {
   const { pathname } = useLocation();
+  const {account} = useMoralis();
 
   return (
     <Menu
@@ -22,9 +24,9 @@ function MenuItems() {
       <Menu.Item key="/nftBalance">
         <NavLink style={{color: "white"}}  to="/nftBalance">My NFTs</NavLink>
       </Menu.Item>                  
-      <Menu.Item key="/profile">
-        <NavLink style={{color: "white"}}  to="/profile">Profile</NavLink>
-      </Menu.Item>
+      {account && <Menu.Item key={"/profile/" + account}>
+        <NavLink style={{ color: "white" }} to={"/profile/" + account}>Profile</NavLink>
+      </Menu.Item>}
       {/* <Menu.Item key="/quickstart">
         <NavLink to="/quickstart">🚀 Quick Start</NavLink>
       </Menu.Item>

@@ -80,9 +80,9 @@ const App = ({ isServerInfo }) => {
             <Route path="/contract">
               <Contract />
             </Route>
-            <Route path="/profile">
+            <Route path="/profile/:address" exact>
               <Profile />
-            </Route>
+            </Route>              
             {/* <Route path="/wallet">
               <Wallet />
             </Route>
