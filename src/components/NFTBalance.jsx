@@ -29,14 +29,14 @@ function NFTBalance() {
   const [allChainNFTs, setNFTs] = useState([]);
   const [loading, setLoading] = useState(false);
 
-  const requestNFTVerification = async (nft) => {
-    console.log("nft="+nft+"&owner="+account+"&chain="+chainId);
+  const requestNFTVerification = async (nft, token_id) => {
+    console.log("nft="+nft+"&token_id="+token_id+"&owner="+account+"&chain="+chainId);
     let options = {
       contractAddress: process.env.REACT_APP_TCT_CONTRACT,
       functionName: "requestNFTVerification",
       abi: [{"inputs":[{"internalType":"string","name":"_queryParams","type":"string"}],"name":"requestNFTVerification","outputs":[{"internalType":"bytes32","name":"requestId","type":"bytes32"}],"stateMutability":"nonpayable","type":"function"}],
       params: {       
-        _queryParams: "nft="+nft+"&owner="+account+"&chain="+chainId,
+        _queryParams: "nft="+nft+"&token_id="+token_id+"&owner="+account+"&chain="+chainId,
       },
       msgValue: 0,
     }
@@ -54,13 +54,13 @@ function NFTBalance() {
     });
   }
   
-  const fetchNFTstatus = async (nft) => {    
+  const fetchNFTstatus = async (nft, token_id) => {    
       const options = {
         contractAddress: process.env.REACT_APP_TCT_CONTRACT,
         functionName: "getNFTRequestStatus",
         abi: [{ "inputs": [{ "internalType": "string", "name": "_queryParams", "type": "string" }], "name": "getNFTRequestStatus", "outputs": [{ "internalType": "uint8", "name": "", "type": "uint8" }], "stateMutability": "view", "type": "function" }],
         params: {
-          _queryParams: "nft=" + nft + "&owner=" + account + "&chain=" + chainId,
+          _queryParams: "nft=" + nft + "&token_id="+token_id+"&owner=" + account + "&chain=" + chainId,
         },
         msgValue: 0,
       }
@@ -89,7 +89,7 @@ function NFTBalance() {
         const NFTBalances = await api.nft.fetchAll(account);
         const allNFTs = await Promise.all(NFTBalances.map(async (NFTBalance) => {
           const hydratedNFTs = await Promise.all(NFTBalance.balance.map(async nft => { 
-            const status = await fetchNFTstatus(nft.token_address);
+            const status = await fetchNFTstatus(nft.token_address, nft.token_id);
             if (!nft.metadata) {
               nft.metadata = await getMetadata(nft);
               // console.log(nft.metadata);
@@ -142,7 +142,7 @@ function NFTBalance() {
                     >
                       <Meta title={nft.name} description={nft.token_address} />
                       {nft.status === "0" ?
-                        <Button onClick={() => requestNFTVerification(nft.token_address)} type="primary" style={{ width: "100%", marginTop: "10px" }}>Register NFT</Button>
+                        <Button onClick={() => requestNFTVerification(nft.token_address, nft.token_id)} type="primary" style={{ width: "100%", marginTop: "10px" }}>Register NFT</Button>
                         : <Button disabled style={{ width: "100%", marginTop: "10px" }}>Verified</Button>}
                     </Card>
                   );
