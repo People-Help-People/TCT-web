@@ -9,8 +9,8 @@ import { useParams } from "react-router";
 
 export default function Profile(props) {
   let { address } = useParams();
-  const { user, account, isWeb3Enabled, enableWeb3, isAuthenticated, isWeb3EnableLoading } = useMoralis();
-  const [username, setUsername] = useState("");
+  const { user, account, isWeb3Enabled, isAuthenticated, isWeb3EnableLoading } = useMoralis();
+  const [username, setUsername] = useState("Unknown");
   const [updateToggle, setUpdateToggle] = useState(false);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -126,9 +126,9 @@ export default function Profile(props) {
     const currentUser = results.find((user) => user.get("ethAddress") === address);
     console.log("results", results, address);
     if (currentUser) {
-      setUsername(currentUser.get("username") || "");
+      setUsername(currentUser.get("username") || "Unknown");
     } else {
-      message.error("Invalid user address");
+      message.error("Invalid user address or User Not registered in TCT!");
     }
     
   };
@@ -213,7 +213,7 @@ export default function Profile(props) {
           ]}
           dataSource={[
             {
-              platform: <Image height="50px" width="50px" src={ImgTwitter} />,
+              platform: <Image preview={false} height="50px" width="50px" src={ImgTwitter} />,
               action:
                 twitterProfile === "" ? (
                   visitor ? <Button disabled>Twitter</Button> : <Button onClick={showModal}>Twitter</Button>

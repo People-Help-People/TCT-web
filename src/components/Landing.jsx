@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 import { Input, Button, Select, Image, List } from "antd";
 import { SearchOutlined } from "@ant-design/icons";
-import axios from "axios";
+import { Link } from "react-router-dom";
+import api from "api";
 
 export default function Landing({ isServerInfo }) {
   const { Option } = Select;
@@ -54,16 +55,13 @@ export default function Landing({ isServerInfo }) {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    axios
-      .get(
-        `${process.env.REACT_APP_BASE_URL}nft/metadata?address=${values.address}&chain=${values.chain}&token_id=${values.token_id}`
-      )
-      .then((res) => {
-        setNftData(res.data);
-      })
-      .catch((err) => {
-        console.log();
-      });
+    api.nft.get(values.address, values.token_id, values.chain).then((res) => {
+      if (res.metadata && typeof(res.metadata) === 'string') {
+        res.metadata = JSON.parse(res.metadata);
+      }
+      console.log(res);
+      setNftData(res);
+    });
   };
 
   return (
@@ -115,22 +113,23 @@ export default function Landing({ isServerInfo }) {
         }}
       >
         <Image
-          src={nftData?.data?.items[0]?.nft_data[0]?.external_data?.image}
+          src={nftData?.metadata?.image}
           style={{ height: "450px", width: "500px" }}
+          preview={false}
         />
         <List title="NFT info">
           <List.Item label="Name">
             <b>Name:</b>{" "}
-            {nftData?.data?.items[0]?.nft_data[0]?.external_data?.name}
+            {nftData?.name}
           </List.Item>
           <List.Item label="Symbol">
-            <b>Symbol:</b> {nftData?.data?.items[0]?.contract_ticker_symbol}
+            <b>Symbol:</b> {nftData?.symbol}
           </List.Item>
           <List.Item label="Block Height">
             <b>Block Height:</b> {nftData?.block_number}
           </List.Item>
           <List.Item label="Creator">
-            <b>Creator:</b> <a href="/">{nftData?.owner_of}</a>
+            <b>Creator:</b> <Link to={"/profile/"+nftData?.owner_of}>{nftData?.owner_of}</Link>
           </List.Item>
           <List.Item label="Report">
             <Button type="danger">Report</Button>
