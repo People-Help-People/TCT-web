@@ -3,7 +3,7 @@ import ReactDOM from "react-dom";
 import App from "./App";
 import { MoralisProvider } from "react-moralis";
 import "./index.css";
-import Landing from "components/Landing";
+import Landing from "components/Explore";
 
 /** Get your free Moralis Account https://moralis.io/ */
 

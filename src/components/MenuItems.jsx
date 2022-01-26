@@ -20,7 +20,10 @@ function MenuItems() {
         justifyContent: "center",
       }}
       defaultSelectedKeys={[pathname]}
-    >
+    >      
+      <Menu.Item key={"/explore/"}>
+        <NavLink style={{ color: "white" }} to={"/explore/"}>Explore</NavLink>
+      </Menu.Item>
       <Menu.Item key="/nftBalance">
         <NavLink style={{color: "white"}}  to="/nftBalance">My NFTs</NavLink>
       </Menu.Item>                  

@@ -1,10 +1,10 @@
 import { useEffect } from "react";
 import { useMoralis } from "react-moralis";
-import { BrowserRouter as Router, Switch, Route,  Link } from "react-router-dom";
+import { BrowserRouter as Router, Switch, Route,  Link , Redirect} from "react-router-dom";
 import Account from "components/Account/Account";
 import Chains from "components/Chains";
 import Profile from "components/Profile";
-import Landing from "components/Landing";
+import Explore from "components/Explore";
 import NFTBalance from "components/NFTBalance";
 import { Layout } from "antd";
 import "antd/dist/antd.css";
@@ -72,7 +72,10 @@ const App = ({ isServerInfo }) => {
         <div style={styles.content}>
           <Switch>
             <Route exact path="/">
-              <Landing isServerInfo={isServerInfo} />
+              <Redirect to="/explore" />
+            </Route>
+            <Route exact path="/explore">
+              <Explore isServerInfo={isServerInfo} />
             </Route>
             <Route path="/nftBalance">
               <NFTBalance />
