@@ -11,24 +11,26 @@ export default function Landing({ isServerInfo }) {
       value: "Ethereum",
     },
     {
-      key: "0x3",
-      value: "Ropsten Testnet",
-    },
-    {
-      key: "0x4",
-      value: "Rinkeby Testnet",
-    },
-    {
       key: "0x2a",
       value: "Kovan Testnet",
     },
+
     {
       key: "0x89",
       value: "Polygon",
     },
+
     {
       key: "0x13881",
-      value: "Mumbai",
+      value: "Matic Mumbai",
+    },
+    {
+      key: "0xa86a",
+      value: "Avalanche",
+    },
+    {
+      key: "0xa869",
+      value: "Fuji",
     },
   ];
 
@@ -56,7 +58,7 @@ export default function Landing({ isServerInfo }) {
       .get(
         `${process.env.REACT_APP_BASE_URL}nft/metadata?address=${values.address}&chain=${values.chain}&token_id=${values.token_id}`
       )
-      .then(async (res) => {
+      .then((res) => {
         setNftData(res.data);
       })
       .catch((err) => {
@@ -113,15 +115,16 @@ export default function Landing({ isServerInfo }) {
         }}
       >
         <Image
-          src={nftData.data.items[0].nft_data[0].external_data.image}
+          src={nftData?.data?.items[0]?.nft_data[0]?.external_data?.image}
           style={{ height: "450px", width: "500px" }}
         />
         <List title="NFT info">
           <List.Item label="Name">
-            <b>Name:</b> {nftData.data.items[0].nft_data[0].external_data.name}
+            <b>Name:</b>{" "}
+            {nftData?.data?.items[0]?.nft_data[0]?.external_data?.name}
           </List.Item>
           <List.Item label="Symbol">
-            <b>Symbol:</b> {nftData.data.items[0].contract_ticker_symbol}
+            <b>Symbol:</b> {nftData?.data?.items[0]?.contract_ticker_symbol}
           </List.Item>
           <List.Item label="Block Height">
             <b>Block Height:</b> {nftData?.block_number}
