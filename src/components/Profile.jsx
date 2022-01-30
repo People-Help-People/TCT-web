@@ -1,16 +1,23 @@
-import { message, Table, Image, Modal, Button } from "antd";
-import { useEffect, useState } from "react";
-import { useMoralis, useWeb3ExecuteFunction } from "react-moralis";
+import { message,notification, Table, Image, Modal, Button, Statistic } from "antd";
+import { useEffect, useState, useMemo } from "react";
+import { useChain, useMoralis, useWeb3ExecuteFunction } from "react-moralis";
 import Moralis from "moralis";
 import { uid } from "uid";
-import { CheckCircleTwoTone } from "@ant-design/icons";
+import { CheckCircleTwoTone, ThunderboltOutlined } from "@ant-design/icons";
 import { ImgTwitter } from "assets";
 import { useParams } from "react-router";
+import { useAPIContract } from "hooks/useAPIContract";
+
+import TCTContract from "contracts/TCT.json";
+import TCT from "list/TCT.json";
+
 
 export default function Profile(props) {
   let { address } = useParams();
   const { user, account, isWeb3Enabled, isAuthenticated, isWeb3EnableLoading } = useMoralis();
+  const { chainId } = useChain();
   const [username, setUsername] = useState("Unknown");
+  const [vouches, setVouches] = useState(0);
   const [updateToggle, setUpdateToggle] = useState(false);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -18,6 +25,11 @@ export default function Profile(props) {
   const [tweetURL, setTweetURL] = useState("");
   const [twitterProfile, setTwitterProfile] = useState("");
   const [visitor, setVisitor] = useState(true); // to identify if the user is visiting his own profile or not
+
+  const { contracame, abi } = TCTContract;
+  const contractAddress = useMemo(() => TCT[chainId], [chainId]);
+
+  const { runContractFunction, contractResponse, isLoading } = useAPIContract();
 
   const contractProcessor = useWeb3ExecuteFunction();
 
@@ -34,44 +46,51 @@ export default function Profile(props) {
     setIsModalVisible(false);
   };
 
+  const onError = () => {
+    notification.error({
+      message: "transaction Fail",
+      description:
+        "Your transaction has failed. Please try again later.",
+    });
+  }
+
   const fetchTwitterAccount = async () => {
-    const options = {
-      contractAddress: process.env.REACT_APP_TCT_CONTRACT,
-      functionName: "getTwitterVerificationStatus",
-      abi: [
-        {
-          inputs: [
-            { internalType: "address", name: "_account", type: "address" },
-          ],
-          name: "getTwitterVerificationStatus",
-          outputs: [{ internalType: "string", name: "", type: "string" }],
-          stateMutability: "view",
-          type: "function",
-        },
-      ],
+    runContractFunction({
       params: {
-        _account: address,
+        chain: chainId,
+        function_name: "getTwitterVerificationStatus",
+        abi,
+        address: contractAddress,
+        params: {
+          _account: address,
+        },
       },
-      msgValue: 0,
-    };
-    await contractProcessor.fetch({
-      params: options,
-      onComplete: (res) => {
-        console.log("res complete", res);
-      },
-      onSuccess: (res) => {
-        console.log("res", res);
-        setTwitterProfile(res);
-      },
-      onError: (err) => {
-        console.log("err", err);
-      },
+      onSuccess: (res) => { setTwitterProfile(res); fetchVouches(); },
+      onError,
+      onComplete: () => { },
     });
   };
 
+  const fetchVouches = async () => {    
+    runContractFunction({
+      params: {
+        chain: chainId,
+        function_name: "getVouches",
+        abi,
+        address: contractAddress,
+        params: {
+          _account: address,
+        },
+      },
+      onSuccess: (res) => { setVouches(res); },
+      onError,
+      onComplete: () => { },
+    });
+  }
+
+
   const verifyTweet = async () => {
     const tweetID = tweetURL.split("/")[5];
-    console.log(tweetID, tweetUID);
     let options = {
       contractAddress: process.env.REACT_APP_TCT_CONTRACT,
       functionName: "requestTwitterVerification",
@@ -140,8 +159,7 @@ export default function Profile(props) {
       setVisitor(account !== address);
       await fetchUsername();
     };
-    if (account && isWeb3Enabled) {
-      console.log(isWeb3Enabled, isAuthenticated, isWeb3EnableLoading);
+    if (account && isWeb3Enabled) {      
       checkExistingAccounts();
     }
   }, [account,isWeb3Enabled,address]);
@@ -162,13 +180,14 @@ export default function Profile(props) {
       <div
         className="header"
         style={{ fontSize: "20px", marginBottom: "40px", textAlign: "center" }}
-      >
-        {visitor ? (
+      >        
+        {visitor ? (<>          
           <h1 style={{ display: "inline", marginRight: "10px" }}>
           {username}
         </h1>
+        </>
         ) : updateToggle ? (
-          <>
+            <>              
             <h1 style={{ display: "inline", marginRight: "10px" }}>
               <input
                 type="text"
@@ -186,6 +205,7 @@ export default function Profile(props) {
             <button onClick={() => setUpdateToggle(true)}>Edit</button>
           </>
         )}
+        <Statistic title="Vouches" value={vouches} prefix={<ThunderboltOutlined />} style={{marginTop:"20px"}} />
       </div>
       <div className="body">
         <Table

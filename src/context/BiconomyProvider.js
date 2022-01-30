@@ -50,7 +50,6 @@ const BiconomyContextProvider = (props) => {
         apiKey: biconomyApiKey[chainId],
         debug: true,
       });
-      console.log(biconomy);
       setBiconomyProvider(biconomy);
 
       // This web3 instance is used to read normally and write to contract via meta transactions.
@@ -58,8 +57,7 @@ const BiconomyContextProvider = (props) => {
 
       biconomy
         .onEvent(biconomy.READY, () => {
-          setIsBiconomyInitialized(true);
-          console.log(contractAddress);
+          setIsBiconomyInitialized(true);          
           const contractInst = new web3.eth.Contract(abi, contractAddress);
           setContract(contractInst);
         })

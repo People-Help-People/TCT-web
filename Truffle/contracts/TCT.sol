@@ -114,6 +114,10 @@ contract TCT is ChainlinkClient, BaseRelayRecipient {
         }
     }
 
+    function getVouches(address _account) public view returns (uint256) {
+        return vouchesMap[_account].values.length;
+    }
+
     // Truth Tokens
     function truthBalance(address _account) public view returns (uint256) {
         return truthTokens.balanceOf(_account);

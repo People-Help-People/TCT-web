@@ -79,9 +79,6 @@ const App = ({ isServerInfo }) => {
             <Route path="/nftBalance">
               <NFTBalance />
             </Route>
-            <Route path="/contract">
-              <Contract />
-            </Route>
             <Route path="/profile/:address" exact>
               <Profile />
             </Route>              
