@@ -20,7 +20,8 @@ const styles = {
 };
 
 function NFTBalance() {
-  const { chainId, account } = useMoralis();
+  const { chainId, account, Moralis } = useMoralis();
+  console.log(Moralis.Units.Token)
   const { getMetadata } = useVerifyMetadata();
   const contractProcessor = useWeb3ExecuteFunction();
 
