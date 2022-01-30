@@ -9,7 +9,6 @@ import NFTBalance from "components/NFTBalance";
 import { Layout } from "antd";
 import "antd/dist/antd.css";
 import "./style.css";
-import Contract from "components/Contract/Contract";
 import Text from "antd/lib/typography/Text";
 import MenuItems from "./components/MenuItems";
 import TCTlogo from "./logo.png";
