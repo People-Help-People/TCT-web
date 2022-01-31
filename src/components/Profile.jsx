@@ -1,4 +1,4 @@
-import { message,notification, Table, Image, Modal, Button, Statistic } from "antd";
+import { message,notification, Table, Image, Modal, Button, Statistic, Spin } from "antd";
 import { useEffect, useState, useMemo } from "react";
 import { useChain, useMoralis, useWeb3ExecuteFunction } from "react-moralis";
 import Moralis from "moralis";
@@ -143,18 +143,45 @@ export default function Profile(props) {
     });
   }
 
+  // const vouchUserCall = async () => {
+  //   onSubmitMetaTransaction({
+  //     onConfirmation: (res) => {
+  //       console.log(res);
+  //     },
+  //     onError: (res) => {        
+  //       notification.error({
+  //         message: "Metatransaction Fail",
+  //         description:
+  //           "Your metatransaction has failed. Please try again later.",
+  //       });
+  //     }
+  //   });
+  // }
   const vouchUserCall = async () => {
-    onSubmitMetaTransaction({
-      onConfirmation: (res) => {
-        console.log(res);
+    let options = {
+      contractAddress: contractAddress,
+      functionName: "vouchUser",
+      abi: abi,
+      params: {
+        _account: vouchForm.address,
       },
-      onError: (res) => {        
-        notification.error({
-          message: "Metatransaction Fail",
-          description:
-            "Your metatransaction has failed. Please try again later.",
-        });
-      }
+      msgValue: 0,
+    };
+    setLoading(true);
+    await contractProcessor.fetch({
+      params: options,
+      onComplete: (res) => {
+        console.log("res", res);
+        setLoading(false);
+        message.success("Vouched Successfully");
+      },
+      onSuccess: (res) => {
+        console.log("res", res);
+      },
+      onError: (err) => {
+        console.log("err", err);
+        message.error("Vouch Failed");
+      },
     });
   }
   
@@ -210,7 +237,7 @@ export default function Profile(props) {
           <h1 style={{ display: "inline", marginRight: "10px" }}>
           {username}
           </h1>
-          <button onClick={vouchUserCall}>Vouch</button>
+          <button onClick={vouchUserCall}>{loading ? <Spin/> :"Vouch"}</button>
         </>
         ) : updateToggle ? (
             <>              
