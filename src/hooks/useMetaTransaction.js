@@ -10,7 +10,7 @@ const useMetaTransaction = ({ input, transactionParams }) => {
   const onSubmitMetaTransaction = async ({ onConfirmation, onError }) => {
     try {
       setIsMetatransactionProcessing(true);
-      let tx = contract.methods.setStorage(input).send(transactionParams);
+      let tx = contract.methods.vouchUser(input).send(transactionParams);
 
       tx.on("transactionHash", function () {})
         .once("confirmation", function (transactionHash) {

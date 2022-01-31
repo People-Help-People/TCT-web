@@ -5,8 +5,10 @@
   "license": "MIT",
   "dependencies": {
     "@chainlink/contracts": "^0.3.1",
-    "@opengsn/contracts": "^2.2.4",
+    "@opengsn/contracts": "^2.2.5",
+    "@opengsn/provider": "^2.2.5",
     "@openzeppelin/contracts": "^4.4.2",
+    "@openzeppelin/contracts-ethereum-package": "^3.0.0",
     "truffle-plugin-verify": "^0.5.18"
   },
   "scripts": {

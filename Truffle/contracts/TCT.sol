@@ -97,7 +97,7 @@ contract TCT is ChainlinkClient, BaseRelayRecipient {
     }
 
     // Vouching for users
-    function vouchUser(address _account) public payable {        
+    function vouchUser(address _account) public {        
         require(
             bytes(twitterAccountVerificationMap[msg.sender]).length != 0,
             "User not verified"

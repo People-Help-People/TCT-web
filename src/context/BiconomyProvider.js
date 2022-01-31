@@ -45,6 +45,7 @@ const BiconomyContextProvider = (props) => {
       const networkProvider = new Web3.providers.HttpProvider(
         networkConfigs[chainId]?.rpcUrl
       );
+      console.log(networkProvider);
       const biconomy = new Biconomy(networkProvider, {
         walletProvider: walletWeb3.currentProvider,
         apiKey: biconomyApiKey[chainId],

@@ -7,6 +7,8 @@ import { CheckCircleTwoTone, ThunderboltOutlined } from "@ant-design/icons";
 import { ImgTwitter } from "assets";
 import { useParams } from "react-router";
 import { useAPIContract } from "hooks/useAPIContract";
+import useMetaTransaction from "hooks/useMetaTransaction";
+import useBiconomyContext from "hooks/useBiconomyContext";
 
 import TCTContract from "contracts/TCT.json";
 import TCT from "list/TCT.json";
@@ -16,6 +18,9 @@ export default function Profile(props) {
   let { address } = useParams();
   const { user, account, isWeb3Enabled, isAuthenticated, isWeb3EnableLoading } = useMoralis();
   const { chainId } = useChain();
+  const { isBiconomyInitialized, biconomyProvider } = useBiconomyContext();
+  const initialState = { address: "", signatureType: "" };
+  const [vouchForm, setVouchForm] = useState(initialState);
   const [username, setUsername] = useState("Unknown");
   const [vouches, setVouches] = useState(0);
   const [updateToggle, setUpdateToggle] = useState(false);
@@ -46,6 +51,14 @@ export default function Profile(props) {
     setIsModalVisible(false);
   };
 
+  const { isMetatransactionProcessing, onSubmitMetaTransaction } = useMetaTransaction({
+    input: vouchForm.address,
+    transactionParams: {
+      from: account,
+      signatureType: biconomyProvider[vouchForm.signatureType],
+    },
+  });
+
   const onError = () => {
     notification.error({
       message: "transaction Fail",
@@ -70,24 +83,6 @@ export default function Profile(props) {
       onComplete: () => { },
     });
   };
-
-  const fetchVouches = async () => {    
-    runContractFunction({
-      params: {
-        chain: chainId,
-        function_name: "getVouches",
-        abi,
-        address: contractAddress,
-        params: {
-          _account: address,
-        },
-      },
-      onSuccess: (res) => { setVouches(res); },
-      onError,
-      onComplete: () => { },
-    });
-  }
-
 
   const verifyTweet = async () => {
     const tweetID = tweetURL.split("/")[5];
@@ -129,7 +124,39 @@ export default function Profile(props) {
         console.log("err", err);
       },
     });
-  };
+  };  
+
+  const fetchVouches = async () => {    
+    runContractFunction({
+      params: {
+        chain: chainId,
+        function_name: "getVouches",
+        abi,
+        address: contractAddress,
+        params: {
+          _account: address,
+        },
+      },
+      onSuccess: (res) => { setVouches(res); },
+      onError,
+      onComplete: () => { },
+    });
+  }
+
+  const vouchUserCall = async () => {
+    onSubmitMetaTransaction({
+      onConfirmation: (res) => {
+        console.log(res);
+      },
+      onError: (res) => {        
+        notification.error({
+          message: "Metatransaction Fail",
+          description:
+            "Your metatransaction has failed. Please try again later.",
+        });
+      }
+    });
+  }
   
   const updateUsername = async (username) => {
     user.set("username", username);
@@ -139,17 +166,14 @@ export default function Profile(props) {
     });
   };
 
-  const fetchUsername = async () => {
-    
+  const fetchUsername = async () => {    
     const results = await Moralis.Cloud.run("getUsername");
     const currentUser = results.find((user) => user.get("ethAddress") === address);
-    console.log("results", results, address);
     if (currentUser) {
       setUsername(currentUser.get("username") || "Unknown");
     } else {
       message.error("Invalid user address or User Not registered in TCT!");
-    }
-    
+    }    
   };
 
 
@@ -173,6 +197,7 @@ export default function Profile(props) {
     } else {
       setTweetUID(localStorage.getItem("uid"));
     }    
+    setVouchForm({address: window.location.href.split("/").at(-1), signatureType: "PERSONAL_SIGN"});
   }, []);
 
   return (
@@ -184,7 +209,8 @@ export default function Profile(props) {
         {visitor ? (<>          
           <h1 style={{ display: "inline", marginRight: "10px" }}>
           {username}
-        </h1>
+          </h1>
+          <button onClick={vouchUserCall}>Vouch</button>
         </>
         ) : updateToggle ? (
             <>              
